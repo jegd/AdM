@@ -80,8 +80,20 @@ En el ejemplo de la imagen superior podemos ver cómo se pasa a ejecutar el hand
 La excepción SVC SuperVisor Call es una excepción que nos permite pasar del modo no privilegiado a atender una excepción. Se puede utilizar para atender algún periférico como por ejemplo podría ser atender el UART.
 # ISA
 ## 1. ¿Qué son los sufijos y para qué se los utiliza? Dé un ejemplo
+Los sufijos en el set de instrucciones de los procesadores Cortex-M puede servir para actualizar las APSR, esto con el sufijo S. El segundo tipo de sufijos que usamos son para la ejecuciòn condicional de instrucciones como por ejemplo las ejecuciones de instrucciones luego de un If-Then (IT). Ejemplo:
+ET EQ
+ADDEQ R0, R0, R1
 ## 2. ¿Para qué se utiliza el sufijo ‘s’? Dé un ejemplo
+El sufijo S se utiliza para actualizar las flags APSR. Estas son los bits del 27 al 32 del registro APSR (27-Q: DSP overflow o saturation flag, 28-V: overflow, 29-C: verifica el valor del carry, 30-Z: valor igual a 0, 31-N: valor negativo).
 ## 3. ¿Qué utilidad tiene la implementación de instrucciones de aritmética saturada? Dé un ejemplo con operaciones con datos de 8 bits.
+En Cortex-M tenemos intrucciones para ajustes de saturación de datos signados y no signados. Normalmente las instrucciones saturadas se utilizan en procesamiento de señales ya que al amplificar una señal esta puede desbordar el limite de valores disponibles para su representación y terminar deformandose. El manejo de la saturación limita al valor máximo el dato que sale del régimen de datos. Ejemplo:
+Si tenemos el valor no signado de 8 bits 0b11111111 y el valor que capturamos es de 300 , se limitará a capturar 0b11111111, se distorsiona el valor, pero en menor manera que si capturamos el valor 0b101101. 
+En instrucciones sería así:
+USAT R1, #8, R0
 ## 4. Describa brevemente la interfaz entre assembler y C ¿Cómo se reciben los argumentos de las funciones? ¿Cómo se devuelve el resultado? ¿Qué registros deben guardarse en la pila antes de ser modificados?
+En la programación que se viene realizando los archivos de assembly reciben los argumentos mediante su dirección de memoria de 32bits que queda grabada en los registros partiendo desde r0 en adelante. Se debe realizar un push a los registros que utilizemos a partir del r4 y popearlos al salir de nuestra función, porque estos podrían contener información importante antes de haber realizado el cambio de contexto.
 ## 5. ¿Qué es una instrucción SIMD? ¿En qué se aplican y que ventajas reporta su uso? Dé un ejemplo.
- 
+ Las instruciones SIMD (Single instruction multiple data), son intrucciones que nos permiten realizar la misma instrucción pero con más de un dato en una sola operación del microcontrolador.
+ ![image](https://github.com/jegd/AdM/assets/105693319/c4615206-9f45-4ab3-9b12-04498f5dd89f)
+ En la imagen superior podemos ver un ejemplo de cómo esta instrucción sumará 2 valores no signados de 16bits, los sumará y luego los  divirá, colocando el resultado en en un registro. Esto nos ayuda a realizar operaciones con multiples datos más rápido.
+
